@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.bold,
     fontSize: fontSizes["3xl"],
-    color: colors.primary[900],
+    color: colors.black,
     textAlign: "center",
     marginBottom: spacing["2xl"],
   },

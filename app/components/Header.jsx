@@ -8,7 +8,7 @@ const Header = ({ title, subtitle, onBackPress, showBackIcon }) => {
     <View style={styles.headerContainer}>
       {showBackIcon && (
         <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
-          <Ionicons name="chevron-back" size={28} color={colors.primary[900]} />
+          <Ionicons name="chevron-back" size={28} color={colors.black} />
         </TouchableOpacity>
       )}
       <Text style={styles.title}>{title}</Text>
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fonts.bold,
     fontSize: fontSizes["3xl"],
-    color: colors.primary[900],
+    color: colors.black,
     textAlign: "center",
     marginBottom: spacing.base,
   },

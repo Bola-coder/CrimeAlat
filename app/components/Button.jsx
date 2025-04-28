@@ -29,13 +29,13 @@ const Button = ({
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.primary[700],
     marginTop: 100,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.xl,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: colors.primary[500],
+    borderColor: colors.primary[700],
     borderStyle: "solid",
     width: "90%",
     alignSelf: "center",
