@@ -1,10 +1,11 @@
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
+import useAppStore from "./app/store/useAppStore";
 import AuthNavigation from "./app/navigation/AuthNavigation";
+import { AuthenticationNavigation, OnboardNavigation } from "./app/navigation";
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -41,9 +42,7 @@ export default function App() {
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
-      <NavigationContainer>
-        <AuthNavigation />
-      </NavigationContainer>
+      <Navigation />
       <StatusBar style="auto" />
     </View>
   );
@@ -56,3 +55,14 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? 25 : 40,
   },
 });
+
+const Navigation = () => {
+  const isFirstTime = useAppStore((state) => state.isFirstTime);
+  // const setIsFirstTime = useAppStore((state) => state.setIsFirstTime);
+
+  // useEffect(() => {
+  //   setIsFirstTime(true);
+  // });
+
+  return isFirstTime ? <OnboardNavigation /> : <AuthenticationNavigation />;
+};

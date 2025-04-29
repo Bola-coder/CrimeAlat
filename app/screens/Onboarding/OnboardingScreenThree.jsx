@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
+import useAppStore from "../../store/useAppStore";
 import { colors, fonts, fontSizes, spacing, wp } from "../../utils/theme";
 import images from "../../utils/images";
 import Button from "../../components/Button";
@@ -9,6 +10,13 @@ const { onboardingImageThree } = images;
 
 const OnboardingScreenThree = () => {
   const navigation = useNavigation();
+  const setIsFirstTime = useAppStore((state) => state.setIsFirstTime);
+
+  useEffect(() => {
+    return () => {
+      setIsFirstTime(false);
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -29,11 +37,11 @@ const OnboardingScreenThree = () => {
       <View>
         <Button
           text={"Login"}
-          onPress={() => navigation.navigate("LoginScreen")}
+          onPress={() => navigation.navigate("AuthScreen")}
         />
         <Button
           text={"Continue as Guest"}
-          onPress={() => navigation.navigate("LoginScreen")}
+          onPress={() => navigation.navigate("AuthScreen")}
           buttonStyle={{
             backgroundColor: "transparent",
             borderWidth: 0,
@@ -41,7 +49,7 @@ const OnboardingScreenThree = () => {
             borderRadius: 0,
             marginTop: 10,
           }}
-          textStyle={{ color: colors.primary[500], fontFamily: fonts.semiBold }}
+          textStyle={{ color: colors.primary[800], fontFamily: fonts.semiBold }}
         />
       </View>
     </View>
