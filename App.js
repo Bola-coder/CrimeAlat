@@ -3,13 +3,21 @@ import { useState, useEffect, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 import useAppStore from "./app/store/useAppStore";
-import AuthNavigation from "./app/navigation/AuthNavigation";
-import { AuthenticationNavigation, OnboardNavigation } from "./app/navigation";
-SplashScreen.preventAutoHideAsync();
+import {
+  ApplicationNavigation,
+  AuthenticationNavigation,
+  OnboardNavigation,
+} from "./app/navigation";
+import { useCheckAuthStatus } from "./app/hooks/useAuth";
 
 export default function App() {
+  SplashScreen.preventAutoHideAsync();
+
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     async function loadFonts() {
@@ -42,7 +50,10 @@ export default function App() {
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
-      <Navigation />
+      <QueryClientProvider client={queryClient}>
+        <Navigation />
+      </QueryClientProvider>
+      <Toast />
       <StatusBar style="auto" />
     </View>
   );
@@ -58,11 +69,14 @@ const styles = StyleSheet.create({
 
 const Navigation = () => {
   const isFirstTime = useAppStore((state) => state.isFirstTime);
-  // const setIsFirstTime = useAppStore((state) => state.setIsFirstTime);
-
-  // useEffect(() => {
-  //   setIsFirstTime(true);
-  // });
-
-  return isFirstTime ? <OnboardNavigation /> : <AuthenticationNavigation />;
+  const { data: user } = useCheckAuthStatus();
+  const isAuthenticated = !!user;
+  console.log("isAuthenticated", isAuthenticated);
+  return isFirstTime ? (
+    <OnboardNavigation />
+  ) : isAuthenticated ? (
+    <ApplicationNavigation />
+  ) : (
+    <AuthenticationNavigation />
+  );
 };

@@ -1,67 +1,151 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "../../hooks/useAuth";
+import { useToastMessage } from "../../hooks/useToastMessage";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { colors, fonts, fontSizes, spacing, wp } from "../../utils/theme";
-import { Ionicons } from "@expo/vector-icons"; // Ensure expo install expo/vector-icons
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQueryClient } from "@tanstack/react-query";
+
+const schema = z.object({
+  email: z
+    .string({ required_error: "Email is required" })
+    .email("Invalid email address"),
+  password: z.string({ required_error: "Password is required" }),
+});
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [secureText, setSecureText] = useState(true);
+  const { showToast } = useToastMessage();
+  const { mutate: login, isPending } = useLogin();
+  const queryClient = useQueryClient();
 
-  const handleLogin = () => {
-    // Implement your login logic here
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty, isValid, errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: "onBlur",
+    reValidateMode: "onChange",
+  });
+
+  const onSubmit = (data) => {
+    const formData = {
+      email: data.email.toLowerCase(),
+      password: data.password,
+    };
+    login(data, {
+      onSuccess: (response) => {
+        queryClient.invalidateQueries(["authStatus"]);
+        AsyncStorage.setItem("user", JSON.stringify(response.user));
+        AsyncStorage.setItem("token", response.token);
+        showToast({
+          type: "success",
+          message: "Login successful",
+        });
+        // navigation.replace("App");
+      },
+      onError: (error) => {
+        console.log(error);
+        showToast({
+          type: "error",
+          message: error?.response?.data?.message || "Login failed",
+        });
+      },
+    });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={{ flex: 1, backgroundColor: colors.background[100] }}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Welcome Back</Text>
 
-      <Input
-        label="Username"
-        placeholder="Enter your username"
-        value={username}
-        onChangeText={setUsername}
-      />
-
-      <View style={styles.passwordContainer}>
-        <Input
-          label="Password"
-          placeholder="Enter your password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={secureText}
-          inputStyle={{ paddingRight: 50 }}
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <Input
+              label="Email"
+              placeholder="Enter your email address"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              error={errors.email?.message}
+            />
+          )}
         />
-        <TouchableOpacity
-          style={styles.eyeIcon}
-          onPress={() => setSecureText(!secureText)}
-        >
-          <Ionicons
-            name={secureText ? "eye-off" : "eye"}
-            size={24}
-            color={colors.background[700]}
+
+        <View style={styles.passwordContainer}>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                label="Password"
+                placeholder="Enter your password"
+                secureTextEntry={secureText}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                error={errors.password?.message}
+              />
+            )}
           />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setSecureText(!secureText)}
+          >
+            <Ionicons
+              name={secureText ? "eye-off" : "eye"}
+              size={24}
+              color={colors.background[700]}
+            />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("ForgotPasswordScreen")}
+          style={styles.forgotPassword}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
-      </View>
 
-      <TouchableOpacity
-        onPress={() => navigation.navigate("ForgotPasswordScreen")}
-        style={styles.forgotPassword}
-      >
-        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-      </TouchableOpacity>
+        <Button
+          text="Login"
+          onPress={handleSubmit(onSubmit)}
+          disabled={!isDirty || !isValid}
+          loading={isPending}
+        />
 
-      <Button text="Login" onPress={handleLogin} />
-
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Don't have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("SignupScreen")}>
-          <Text style={styles.signupText}> Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Don’t have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("SignupScreen")}>
+            <Text style={styles.loginText}> Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -69,10 +153,9 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: colors.background[100],
     paddingHorizontal: spacing.xs,
-    paddingVertical: wp("10%"),
+    paddingVertical: wp("15%"),
+    backgroundColor: colors.background[100],
   },
   title: {
     fontFamily: fonts.bold,
@@ -91,12 +174,11 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     marginTop: spacing.sm,
-    alignSelf: "flex-end",
-    marginRight: spacing.xl,
+    alignItems: "flex-end",
   },
   forgotPasswordText: {
+    color: colors.primary[600],
     fontFamily: fonts.medium,
-    color: colors.primary[700],
     fontSize: fontSizes.sm,
   },
   footer: {
@@ -109,7 +191,7 @@ const styles = StyleSheet.create({
     color: colors.background[700],
     fontSize: fontSizes.sm,
   },
-  signupText: {
+  loginText: {
     fontFamily: fonts.bold,
     color: colors.primary[600],
     fontSize: fontSizes.sm,

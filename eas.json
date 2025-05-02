@@ -9,6 +9,9 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
+      },
+      "env": {
+       "EXPO_PUBLIC_API_URL": "https://crime-alat-api.onrender.com/api/v1"
       }
     },
     "preview": {

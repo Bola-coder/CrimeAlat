@@ -5,9 +5,8 @@ import { colors, fonts, fontSizes, spacing, wp } from "../../utils/theme";
 import images from "../../utils/images";
 
 const { done: doneImage } = images;
-const SuccessScreen = ({ navigation }) => {
+const VerificationSuccessScreen = ({ navigation }) => {
   const handleContinue = () => {
-    // Implement navigation logic
     navigation.navigate("LoginScreen");
   };
 
@@ -26,7 +25,7 @@ const SuccessScreen = ({ navigation }) => {
   );
 };
 
-export default SuccessScreen;
+export default VerificationSuccessScreen;
 
 const styles = StyleSheet.create({
   container: {

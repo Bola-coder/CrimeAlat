@@ -4,9 +4,10 @@ import LoginScreen from "../screens/Auth/LoginScreen";
 import SignupScreen from "../screens/Auth/SignupScreen";
 import ForgotPasswordScreen from "../screens/Auth/ForgotPassword";
 import VerifyEmailScreen from "../screens/Auth/VerifyEmail";
-import SuccessScreen from "../screens/App/SuccessScreen";
+import VerificationSuccessScreen from "../screens/Auth/VerificationSuccessScreen";
 import VerifyPasswordResetScreen from "../screens/Auth/VerifyPasswordReset";
 import ResetPasswordScreen from "../screens/Auth/ResetPassword";
+import AppNavigation from "./AppNavigations";
 
 const Stack = createNativeStackNavigator();
 const AuthNavigation = () => {
@@ -63,7 +64,15 @@ const AuthNavigation = () => {
       />
       <Stack.Screen
         name="SuccessScreen"
-        component={SuccessScreen}
+        component={VerificationSuccessScreen}
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="App"
+        component={AppNavigation}
         options={{
           headerShown: false,
           animation: "slide_from_right",
