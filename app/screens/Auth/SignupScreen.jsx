@@ -82,10 +82,9 @@ const SignupScreen = ({ navigation }) => {
           type: "success",
           message: response.message,
         });
-        navigation.navigate("VerifyEmailScreen"),
-          {
-            email: data.email,
-          };
+        navigation.navigate("VerifyEmailScreen", {
+          email: data.email,
+        });
       },
       onError: (error) => {
         // console.log(error.request);

@@ -10,6 +10,7 @@ import { colors, fonts, fontSizes, spacing, wp } from "../../utils/theme";
 
 const VerifyEmailScreen = ({ navigation }) => {
   const route = useRoute();
+  console.log(route.params);
   const { email } = route.params;
   const [code, setCode] = useState("");
   const { mutate: resendVerificationCode, isPending } =

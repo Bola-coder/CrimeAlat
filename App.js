@@ -12,6 +12,7 @@ import {
   OnboardNavigation,
 } from "./app/navigation";
 import { useCheckAuthStatus } from "./app/hooks/useAuth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   SplashScreen.preventAutoHideAsync();
@@ -48,6 +49,8 @@ export default function App() {
     return null;
   }
 
+  // AsyncStorage.clear();
+
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
       <QueryClientProvider client={queryClient}>
@@ -77,6 +80,6 @@ const Navigation = () => {
   ) : isAuthenticated ? (
     <ApplicationNavigation />
   ) : (
-    <AuthenticationNavigation />
+    <ApplicationNavigation />
   );
 };

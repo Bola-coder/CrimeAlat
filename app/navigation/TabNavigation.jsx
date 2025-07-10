@@ -1,83 +1,65 @@
-import { View, Text } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import IonIcons from "@expo/vector-icons/Ionicons";
 import HomeScreen from "../screens/App/Home/HomeScreen";
+import { colors } from "../utils/theme";
 
 const Tab = createBottomTabNavigator();
+
+const ICONS = {
+  Home: { active: "home", inactive: "home-outline" },
+  Alerts: { active: "notifications", inactive: "notifications-outline" },
+  Reports: {
+    active: "document-text",
+    inactive: "document-text-outline",
+  },
+  Settings: {
+    active: "settings",
+    inactive: "settings-outline",
+  },
+};
+
 const TabNavigation = () => {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-          let routeName = route.name;
-          if (routeName == "Home") {
-            iconName = focused ? "home" : "home-outline";
-            size = focused ? 26 : 24;
-          } else if (routeName === "Alerts") {
-            iconName = focused ? "download" : "download-outline";
-            size = focused ? 26 : 24;
-          } else if (routeName === "Reports") {
-            iconName = focused
-              ? "chatbubble-ellipses"
-              : "chatbubble-ellipses-outline";
-            size = focused ? 26 : 24;
-          } else if (routeName === "Settings") {
-            iconName = focused ? "person" : "person-outline";
-            size = focused ? 26 : 24;
-          }
-          return <IonIcons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: "#1B4A58",
-        tabBarActiveBackgroundColor: "#FFF",
-        tabBarInactiveBackgroundColor: "#FFF",
-        tabBarHideOnKeyboard: true,
-        tabBarStyle: {
-          height: 60,
-          marginBottom: 0,
-          paddingBottom: 5,
-          //   borderRadius: 4,
-        },
-        tabBarLabelStyle: {
-          fontSize: 14,
-          fontWeight: "bold",
-        },
-      })}
+      screenOptions={({ route }) => {
+        const routeName = route.name;
+        return {
+          tabBarIcon: ({ focused, color, size }) => {
+            const iconName = focused
+              ? ICONS[routeName]?.active
+              : ICONS[routeName]?.inactive;
+            return (
+              <IonIcons
+                name={iconName}
+                size={focused ? 26 : 24}
+                color={color}
+              />
+            );
+          },
+          tabBarActiveTintColor: colors.primary["700"],
+          tabBarInactiveTintColor: "#999",
+          tabBarActiveBackgroundColor: "#FFF",
+          tabBarInactiveBackgroundColor: "#FFF",
+          tabBarHideOnKeyboard: true,
+          tabBarStyle: {
+            height: 80,
+            paddingBottom: 5,
+            paddingTop: 10,
+          },
+          tabBarLabelStyle: {
+            fontSize: 14,
+            fontWeight: "bold",
+          },
+          headerShown: false,
+        };
+      }}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          tabBarLabel: "Home",
-        }}
-      />
-      <Tab.Screen
-        name="Alerts"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          tabBarLabel: "Alerts",
-        }}
-      />
-      <Tab.Screen
-        name="Reports"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          tabBarLabel: "Reports",
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={HomeScreen}
-        options={{
-          headerShown: false,
-          tabBarLabel: "Settings",
-        }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Alerts" component={HomeScreen} />
+      <Tab.Screen name="Reports" component={HomeScreen} />
+      <Tab.Screen name="Settings" component={HomeScreen} />
     </Tab.Navigator>
   );
 };

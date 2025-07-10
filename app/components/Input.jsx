@@ -31,6 +31,12 @@ const Input = ({
         multiline={multiline}
         editable={editable}
         {...props}
+        spellCheck={false}
+        autoComplete="off"
+        autoCorrect={false}
+        autoCapitalize="none"
+        textContentType="none"
+        importantForAutofill="no"
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>

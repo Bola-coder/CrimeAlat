@@ -24,7 +24,9 @@ const schema = z.object({
   email: z
     .string({ required_error: "Email is required" })
     .email("Invalid email address"),
-  password: z.string({ required_error: "Password is required" }),
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(6, "Password must be at least 6 characters"),
 });
 
 const LoginScreen = ({ navigation }) => {
@@ -52,7 +54,7 @@ const LoginScreen = ({ navigation }) => {
       email: data.email.toLowerCase(),
       password: data.password,
     };
-    login(data, {
+    login(formData, {
       onSuccess: (response) => {
         queryClient.invalidateQueries(["authStatus"]);
         AsyncStorage.setItem("user", JSON.stringify(response.user));
@@ -173,27 +175,28 @@ const styles = StyleSheet.create({
     top: 40,
   },
   forgotPassword: {
-    marginTop: spacing.sm,
+    marginTop: spacing.lg,
     alignItems: "flex-end",
   },
   forgotPasswordText: {
     color: colors.primary[600],
     fontFamily: fonts.medium,
     fontSize: fontSizes.sm,
+    marginRight: spacing.lg,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: spacing.lg,
+    marginTop: spacing.xl,
   },
   footerText: {
     fontFamily: fonts.regular,
     color: colors.background[700],
-    fontSize: fontSizes.sm,
+    fontSize: fontSizes.md,
   },
   loginText: {
     fontFamily: fonts.bold,
     color: colors.primary[600],
-    fontSize: fontSizes.sm,
+    fontSize: fontSizes.md,
   },
 });
